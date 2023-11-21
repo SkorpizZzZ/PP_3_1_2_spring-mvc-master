@@ -3,9 +3,12 @@ package ru.javamentor.springmvc.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.javamentor.springmvc.model.User;
@@ -27,19 +30,19 @@ public class UserController {
         return "users";
     }
 
-    @GetMapping(value = "/user")
-    public String printUserById(ModelMap model, @RequestParam(name = "index", required = false) Long index) {
-        model.addAttribute("userid", userService.findById(index));
-        return "user";
-    }
-
     @GetMapping(value = "/edit")
-    public String editUserById(@RequestParam(name = "index", required = false) Long index, ModelMap model) {
+    public String printUserById(ModelMap model, @RequestParam(name = "index", required = false) Long index) {
         model.addAttribute("user", userService.findById(index));
         return "user-info";
     }
 
-    @PostMapping(value = "/delete")
+    @PatchMapping(value = "/edit")
+    public String editUserById(@ModelAttribute User user) {
+        userService.update(user);
+        return "redirect:/";
+    }
+
+    @DeleteMapping(value = "/delete")
     public String deleteUserById(@RequestParam(name = "index", required = false) Long index) {
         userService.delete(index);
         return "redirect:/";
@@ -52,7 +55,7 @@ public class UserController {
         return "user-info";
     }
 
-    @PostMapping
+    @PatchMapping
     public String saveUser(@ModelAttribute("user") User user) {
         if (user.getId() == null) {
             userService.save(user);
